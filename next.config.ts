@@ -9,7 +9,6 @@ const nextConfig = {
   assetPrefix: process.env.NODE_ENV === 'production' ? '/wms-ui' : '',
   // 클라이언트 사이드 JavaScript 최적화
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['react', 'react-dom']
   }
 }
