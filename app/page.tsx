@@ -1,7 +1,7 @@
 'use client'; 
 // Next.js 13의 App Router에서 클라이언트 사이드 상호작용을 하려면 "use client" 선언 필요
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 type TabName = 
   | 'storingOrders'
@@ -26,30 +26,25 @@ export default function HomePage() {
 
   const API_BASE = 'https://kmoj7dnkpg.execute-api.us-east-2.amazonaws.com/Prod'; // 실제 API 서버 주소로 변경 필요
 
-  // 간단한 fetch 헬퍼 함수
-  async function fetchData(path: string, method: string = 'GET', body?: any) {
+  const fetchData = useCallback(async (path: string, method: string = 'GET', body?: any) => {
     try {
       setError('');
       setData(null);
       setLoading(true);
       console.log('API 호출 시작:', { path, method, body, API_BASE });
 
-      let options: RequestInit = { 
+      const options: RequestInit = { 
         method,
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
-        }
+        },
+        ...(body && { body: JSON.stringify(body) })
       };
-      
-      if (body) {
-        options.body = JSON.stringify(body);
-      }
 
-      console.log('요청 옵션:', options);
       const fullUrl = `${API_BASE}${path}`;
-      console.log('전체 URL:', fullUrl);
+      console.log('요청 URL:', fullUrl);
 
       const res = await fetch(fullUrl, options);
       console.log('응답 상태:', res.status);
@@ -58,11 +53,7 @@ export default function HomePage() {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
 
-      const jsonData = await res.json().catch(e => {
-        console.error('JSON 파싱 에러:', e);
-        throw new Error('응답을 파싱할 수 없습니다.');
-      });
-      
+      const jsonData = await res.json();
       console.log('응답 데이터:', jsonData);
       setData(jsonData);
     } catch (err: any) {
@@ -71,23 +62,22 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  // 탭별로 API 호출 분기
-  const handleTabClick = (tab: TabName) => {
+  const handleTabClick = useCallback((tab: TabName) => {
     setActiveTab(tab);
     setData(null);
     setError('');
 
     switch (tab) {
       case 'storingOrders':
-        fetchData('/storing-orders');  // GET /storing-orders (scan)
+        fetchData('/storing-orders');
         break;
       case 'packages':
-        fetchData('/packages');        // GET /packages (scan)
+        fetchData('/packages');
         break;
       case 'pickSlips':
-        fetchData('/pickslips');       // GET /pickslips (scan)
+        fetchData('/pickslips');
         break;
       case 'packageQuery':
         // 여기서는 탭 클릭만으로는 호출 안 함.
@@ -96,19 +86,17 @@ export default function HomePage() {
         // 탭 클릭만으로 아무 것도 안 함. 사용자 폼 입력 후 post 처리
         break;
     }
-  };
+  }, [fetchData]);
 
-  // package 단건 조회
-  const handlePackageQuery = () => {
+  const handlePackageQuery = useCallback(() => {
     if (!packageId) {
       setError('Please enter packageId');
       return;
     }
     fetchData(`/package?packageId=${packageId}`);
-  };
+  }, [packageId, fetchData]);
 
-  // storing-order/check POST
-  const handleStoringOrderCheck = async (e: React.FormEvent) => {
+  const handleStoringOrderCheck = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!soId || !awb || !boe) {
       setError('Fill all fields');
@@ -119,7 +107,7 @@ export default function HomePage() {
       airwayBillNumber: awb,
       billOfEntryId: boe
     });
-  };
+  }, [soId, awb, boe, fetchData]);
 
   return (
     <div>
