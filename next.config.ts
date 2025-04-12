@@ -11,9 +11,7 @@ const nextConfig = {
     optimizePackageImports: ['react', 'react-dom']
   },
   // 정적 파일 경로 설정
-  trailingSlash: true,
-  // 빌드 출력 디렉토리
-  distDir: 'dist'
+  trailingSlash: true
 }
 
 export default nextConfig
