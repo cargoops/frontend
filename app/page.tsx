@@ -66,8 +66,6 @@ export default function HomePage() {
         fetchData('/pickslips');       // GET /pickslips (scan)
         break;
       case 'packageQuery':
-        // 탭을 누른 시점에는 아직 입력된 packageId 없을 수 있으니, 
-        // 자동으로 fetch하지 않고 UI에 input -> "Search" 버튼을 두는 방법도 있음
         // 여기서는 탭 클릭만으로는 호출 안 함.
         break;
       case 'storingOrderCheck':
