@@ -14,6 +14,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<TabName>('storingOrders');
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   // POST 체크용으로 사용할 양식 입력값
   const [soId, setSoId] = useState('');
@@ -30,11 +31,19 @@ export default function HomePage() {
     try {
       setError('');
       setData(null);
+      setLoading(true);
       console.log('API 호출 시작:', { path, method, body, API_BASE });
 
-      let options: RequestInit = { method };
+      let options: RequestInit = { 
+        method,
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      };
+      
       if (body) {
-        options.headers = { 'Content-Type': 'application/json' };
         options.body = JSON.stringify(body);
       }
 
@@ -45,16 +54,22 @@ export default function HomePage() {
       const res = await fetch(fullUrl, options);
       console.log('응답 상태:', res.status);
       
-      const jsonData = await res.json();
-      console.log('응답 데이터:', jsonData);
-
       if (!res.ok) {
-        throw new Error(jsonData?.message || `HTTP error! status: ${res.status}`);
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
+
+      const jsonData = await res.json().catch(e => {
+        console.error('JSON 파싱 에러:', e);
+        throw new Error('응답을 파싱할 수 없습니다.');
+      });
+      
+      console.log('응답 데이터:', jsonData);
       setData(jsonData);
     } catch (err: any) {
       console.error('API 호출 에러:', err);
-      setError(err.message);
+      setError(err.message || '알 수 없는 에러가 발생했습니다.');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -110,12 +125,15 @@ export default function HomePage() {
     <div>
       {/* Tab Menu */}
       <div style={{ marginBottom: '1rem' }}>
-        <button onClick={() => handleTabClick('storingOrders')}>StoringOrders</button>
-        <button onClick={() => handleTabClick('packages')}>Packages</button>
-        <button onClick={() => handleTabClick('pickSlips')}>PickSlips</button>
-        <button onClick={() => handleTabClick('packageQuery')}>Package Query</button>
-        <button onClick={() => handleTabClick('storingOrderCheck')}>StoringOrder Check</button>
+        <button onClick={() => handleTabClick('storingOrders')} disabled={loading}>StoringOrders</button>
+        <button onClick={() => handleTabClick('packages')} disabled={loading}>Packages</button>
+        <button onClick={() => handleTabClick('pickSlips')} disabled={loading}>PickSlips</button>
+        <button onClick={() => handleTabClick('packageQuery')} disabled={loading}>Package Query</button>
+        <button onClick={() => handleTabClick('storingOrderCheck')} disabled={loading}>StoringOrder Check</button>
       </div>
+
+      {/* 로딩 상태 표시 */}
+      {loading && <div>Loading...</div>}
 
       {/* 에러 / 결과 표시 */}
       {error && <div style={{ color: 'red' }}>Error: {error}</div>}

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  basePath: '/wms-ui',
+  basePath: process.env.NODE_ENV === 'production' ? '/wms-ui' : '',
   images: {
     unoptimized: true
   }
