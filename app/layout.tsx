@@ -16,7 +16,7 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/wms-ui/favicon.ico" />
         <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossOrigin="anonymous"></script>
         <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossOrigin="anonymous"></script>
       </head>
@@ -33,6 +33,10 @@ export default function RootLayout({
               console.log('Page loaded');
               if (typeof window.React !== 'undefined') {
                 console.log('React loaded');
+              }
+              // 클라이언트 사이드 코드가 실행되는지 확인
+              if (typeof window !== 'undefined') {
+                console.log('Window object is available');
               }
             });
           `}

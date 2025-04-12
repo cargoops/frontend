@@ -28,12 +28,17 @@ export default function HomePage() {
   const API_BASE = 'https://kmoj7dnkpg.execute-api.us-east-2.amazonaws.com/Prod'; // 실제 API 서버 주소로 변경 필요
 
   useEffect(() => {
+    console.log('useEffect 실행');
     setIsClient(true);
-    console.log('Client-side code is running');
+    console.log('isClient 상태 변경됨:', true);
   }, []);
 
   const fetchData = useCallback(async (path: string, method: string = 'GET', body?: any) => {
-    if (!isClient) return;
+    console.log('fetchData 호출됨');
+    if (!isClient) {
+      console.log('클라이언트 사이드가 아님');
+      return;
+    }
     
     try {
       setError('');
@@ -73,7 +78,11 @@ export default function HomePage() {
   }, [isClient]);
 
   const handleTabClick = useCallback((tab: TabName) => {
-    if (!isClient) return;
+    console.log('handleTabClick 호출됨:', tab);
+    if (!isClient) {
+      console.log('클라이언트 사이드가 아님');
+      return;
+    }
     
     setActiveTab(tab);
     setData(null);
@@ -99,7 +108,11 @@ export default function HomePage() {
   }, [fetchData, isClient]);
 
   const handlePackageQuery = useCallback(() => {
-    if (!isClient) return;
+    console.log('handlePackageQuery 호출됨');
+    if (!isClient) {
+      console.log('클라이언트 사이드가 아님');
+      return;
+    }
     
     if (!packageId) {
       setError('Please enter packageId');
@@ -109,7 +122,11 @@ export default function HomePage() {
   }, [packageId, fetchData, isClient]);
 
   const handleStoringOrderCheck = useCallback(async (e: React.FormEvent) => {
-    if (!isClient) return;
+    console.log('handleStoringOrderCheck 호출됨');
+    if (!isClient) {
+      console.log('클라이언트 사이드가 아님');
+      return;
+    }
     
     e.preventDefault();
     if (!soId || !awb || !boe) {
@@ -122,6 +139,8 @@ export default function HomePage() {
       billOfEntryId: boe
     });
   }, [soId, awb, boe, fetchData, isClient]);
+
+  console.log('렌더링:', { isClient, activeTab, loading });
 
   if (!isClient) {
     return <div>Loading...</div>;

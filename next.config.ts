@@ -12,7 +12,9 @@ const nextConfig = {
     optimizePackageImports: ['react', 'react-dom']
   },
   // 정적 파일 경로 설정
-  trailingSlash: true
+  trailingSlash: true,
+  // 정적 파일 경로 설정
+  distDir: 'out'
 }
 
 export default nextConfig
