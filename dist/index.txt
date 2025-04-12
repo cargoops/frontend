@@ -1,0 +1,22 @@
+1:"$Sreact.fragment"
+2:I[7555,[],""]
+3:I[1295,[],""]
+4:I[894,[],"ClientPageRoot"]
+5:I[1057,["974","static/chunks/app/page-d83a174785336833.js"],"default"]
+8:I[9665,[],"MetadataBoundary"]
+a:I[9665,[],"OutletBoundary"]
+d:I[4911,[],"AsyncMetadataOutlet"]
+f:I[9665,[],"ViewportBoundary"]
+11:I[6614,[],""]
+:HL["/wms-ui/_next/static/css/eb0c6c1edc62e482.css","style"]
+0:{"P":null,"b":"-KEAjiHwQGZYw3tI5oHHz","p":"/wms-ui","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/wms-ui/_next/static/css/eb0c6c1edc62e482.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","meta",null,{"charSet":"utf-8"}],["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/wms-ui/favicon.ico"}],["$","script",null,{"src":"https://unpkg.com/react@18/umd/react.production.min.js","crossOrigin":"anonymous"}],["$","script",null,{"src":"https://unpkg.com/react-dom@18/umd/react-dom.production.min.js","crossOrigin":"anonymous"}]]}],["$","body",null,{"children":[["$","div",null,{"style":{"padding":"1rem","borderBottom":"1px solid #ccc"},"children":["$","h2",null,{"children":"WMS UI Demo"}]}],["$","main",null,{"style":{"padding":"1rem"},"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","div",null,{"style":{"display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center","height":"100vh","textAlign":"center"},"children":[["$","h1",null,{"children":"404"}],["$","p",null,{"children":"페이지를 찾을 수 없습니다."}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","script",null,{"children":"\n            window.addEventListener('load', function() {\n              console.log('Page loaded');\n              if (typeof window.React !== 'undefined') {\n                console.log('React loaded');\n              }\n              // 클라이언트 사이드 코드가 실행되는지 확인\n              if (typeof window !== 'undefined') {\n                console.log('Window object is available');\n              }\n            });\n          "}]]}]]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L4",null,{"Component":"$5","searchParams":{},"params":{},"promises":["$@6","$@7"]}],["$","$L8",null,{"children":"$L9"}],null,["$","$La",null,{"children":["$Lb","$Lc",["$","$Ld",null,{"promise":"$@e"}]]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","rnwylwSaK3sK9Yg7uDsI7",{"children":[["$","$Lf",null,{"children":"$L10"}],null]}],null]}],false]],"m":"$undefined","G":["$11","$undefined"],"s":false,"S":true}
+12:"$Sreact.suspense"
+13:I[4911,[],"AsyncMetadata"]
+6:{}
+7:{}
+9:["$","$12",null,{"fallback":null,"children":["$","$L13",null,{"promise":"$@14"}]}]
+c:null
+10:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+b:null
+14:{"metadata":[["$","title","0",{"children":"WMS UI"}],["$","meta","1",{"name":"description","content":"Simple Warehouse Management System UI"}],["$","link","2",{"rel":"icon","href":"/wms-ui/favicon.ico","type":"image/x-icon","sizes":"16x16"}]],"error":null,"digest":"$undefined"}
+e:{"metadata":"$14:metadata","error":null,"digest":"$undefined"}
