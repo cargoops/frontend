@@ -1,95 +1,175 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'; 
+// Next.js 13의 App Router에서 클라이언트 사이드 상호작용을 하려면 "use client" 선언 필요
 
-export default function Home() {
+import React, { useState } from 'react';
+
+type TabName = 
+  | 'storingOrders'
+  | 'packages'
+  | 'pickSlips'
+  | 'packageQuery'
+  | 'storingOrderCheck';
+
+export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<TabName>('storingOrders');
+  const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<string>('');
+
+  // POST 체크용으로 사용할 양식 입력값
+  const [soId, setSoId] = useState('');
+  const [awb, setAwb] = useState('');
+  const [boe, setBoe] = useState('');
+
+  // packageId로 조회할 때 입력값
+  const [packageId, setPackageId] = useState('');
+
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASEURL;
+
+  // 간단한 fetch 헬퍼 함수
+  async function fetchData(path: string, method: string = 'GET', body?: any) {
+    try {
+      setError('');
+      setData(null);
+
+      let options: RequestInit = { method };
+      if (body) {
+        options.headers = { 'Content-Type': 'application/json' };
+        options.body = JSON.stringify(body);
+      }
+
+      const res = await fetch(`${API_BASE}${path}`, options);
+      const jsonData = await res.json();
+
+      if (!res.ok) {
+        throw new Error(jsonData?.message || 'Fetch error');
+      }
+      setData(jsonData);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }
+
+  // 탭별로 API 호출 분기
+  const handleTabClick = (tab: TabName) => {
+    setActiveTab(tab);
+    setData(null);
+    setError('');
+
+    switch (tab) {
+      case 'storingOrders':
+        fetchData('/storing-orders');  // GET /storing-orders (scan)
+        break;
+      case 'packages':
+        fetchData('/packages');        // GET /packages (scan)
+        break;
+      case 'pickSlips':
+        fetchData('/pickslips');       // GET /pickslips (scan)
+        break;
+      case 'packageQuery':
+        // 탭을 누른 시점에는 아직 입력된 packageId 없을 수 있으니, 
+        // 자동으로 fetch하지 않고 UI에 input -> "Search" 버튼을 두는 방법도 있음
+        // 여기서는 탭 클릭만으로는 호출 안 함.
+        break;
+      case 'storingOrderCheck':
+        // 탭 클릭만으로 아무 것도 안 함. 사용자 폼 입력 후 post 처리
+        break;
+    }
+  };
+
+  // package 단건 조회
+  const handlePackageQuery = () => {
+    if (!packageId) {
+      setError('Please enter packageId');
+      return;
+    }
+    fetchData(`/package?packageId=${packageId}`);
+  };
+
+  // storing-order/check POST
+  const handleStoringOrderCheck = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!soId || !awb || !boe) {
+      setError('Fill all fields');
+      return;
+    }
+    fetchData('/storing-order/check', 'POST', {
+      storingOrderId: soId,
+      airwayBillNumber: awb,
+      billOfEntryId: boe
+    });
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div>
+      {/* Tab Menu */}
+      <div style={{ marginBottom: '1rem' }}>
+        <button onClick={() => handleTabClick('storingOrders')}>StoringOrders</button>
+        <button onClick={() => handleTabClick('packages')}>Packages</button>
+        <button onClick={() => handleTabClick('pickSlips')}>PickSlips</button>
+        <button onClick={() => handleTabClick('packageQuery')}>Package Query</button>
+        <button onClick={() => handleTabClick('storingOrderCheck')}>StoringOrder Check</button>
+      </div>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+      {/* 에러 / 결과 표시 */}
+      {error && <div style={{ color: 'red' }}>Error: {error}</div>}
+      {data && (
+        <div style={{ background: '#eee', padding: '1rem', marginBottom: '1rem' }}>
+          <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      )}
+
+      {/* Render tab content */}
+      {activeTab === 'storingOrders' && <p>Fetched StoringOrders data above if success.</p>}
+      {activeTab === 'packages' && <p>Fetched Packages data above if success.</p>}
+      {activeTab === 'pickSlips' && <p>Fetched PickSlips data above if success.</p>}
+
+      {activeTab === 'packageQuery' && (
+        <div>
+          <h3>Package Query</h3>
+          <input
+            type="text"
+            placeholder="Enter packageId"
+            value={packageId}
+            onChange={(e) => setPackageId(e.target.value)}
           />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <button onClick={handlePackageQuery}>Search</button>
+          <p>Result will appear above if successful.</p>
+        </div>
+      )}
+
+      {activeTab === 'storingOrderCheck' && (
+        <div>
+          <h3>StoringOrder Check & Update</h3>
+          <form onSubmit={handleStoringOrderCheck} style={{ display: 'flex', flexDirection: 'column', maxWidth: '300px' }}>
+            <label>
+              StoringOrderId
+              <input
+                type="text"
+                value={soId}
+                onChange={(e) => setSoId(e.target.value)}
+              />
+            </label>
+            <label>
+              AirwayBillNumber
+              <input
+                type="text"
+                value={awb}
+                onChange={(e) => setAwb(e.target.value)}
+              />
+            </label>
+            <label>
+              BillOfEntryId
+              <input
+                type="text"
+                value={boe}
+                onChange={(e) => setBoe(e.target.value)}
+              />
+            </label>
+            <button type="submit">Check / Update</button>
+          </form>
+          <p>Result will appear above if successful (status {'->'} TQ).</p>
+        </div>
+      )}
     </div>
   );
 }
