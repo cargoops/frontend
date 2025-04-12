@@ -23,13 +23,14 @@ export default function HomePage() {
   // packageId로 조회할 때 입력값
   const [packageId, setPackageId] = useState('');
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASEURL;
+  const API_BASE = 'https://kmoj7dnkpg.execute-api.us-east-2.amazonaws.com/Prod'; // 실제 API 서버 주소로 변경 필요
 
   // 간단한 fetch 헬퍼 함수
   async function fetchData(path: string, method: string = 'GET', body?: any) {
     try {
       setError('');
       setData(null);
+      console.log('API 호출 시작:', { path, method, body, API_BASE });
 
       let options: RequestInit = { method };
       if (body) {
@@ -37,14 +38,22 @@ export default function HomePage() {
         options.body = JSON.stringify(body);
       }
 
-      const res = await fetch(`${API_BASE}${path}`, options);
+      console.log('요청 옵션:', options);
+      const fullUrl = `${API_BASE}${path}`;
+      console.log('전체 URL:', fullUrl);
+
+      const res = await fetch(fullUrl, options);
+      console.log('응답 상태:', res.status);
+      
       const jsonData = await res.json();
+      console.log('응답 데이터:', jsonData);
 
       if (!res.ok) {
-        throw new Error(jsonData?.message || 'Fetch error');
+        throw new Error(jsonData?.message || `HTTP error! status: ${res.status}`);
       }
       setData(jsonData);
     } catch (err: any) {
+      console.error('API 호출 에러:', err);
       setError(err.message);
     }
   }
