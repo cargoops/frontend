@@ -1,7 +1,7 @@
 'use client'; 
 // Next.js 13의 App Router에서 클라이언트 사이드 상호작용을 하려면 "use client" 선언 필요
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
 type TabName = 
   | 'storingOrders'
@@ -15,6 +15,7 @@ export default function HomePage() {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState(false);
 
   // POST 체크용으로 사용할 양식 입력값
   const [soId, setSoId] = useState('');
@@ -26,7 +27,14 @@ export default function HomePage() {
 
   const API_BASE = 'https://kmoj7dnkpg.execute-api.us-east-2.amazonaws.com/Prod'; // 실제 API 서버 주소로 변경 필요
 
+  useEffect(() => {
+    setIsClient(true);
+    console.log('Client-side code is running');
+  }, []);
+
   const fetchData = useCallback(async (path: string, method: string = 'GET', body?: any) => {
+    if (!isClient) return;
+    
     try {
       setError('');
       setData(null);
@@ -62,9 +70,11 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isClient]);
 
   const handleTabClick = useCallback((tab: TabName) => {
+    if (!isClient) return;
+    
     setActiveTab(tab);
     setData(null);
     setError('');
@@ -86,17 +96,21 @@ export default function HomePage() {
         // 탭 클릭만으로 아무 것도 안 함. 사용자 폼 입력 후 post 처리
         break;
     }
-  }, [fetchData]);
+  }, [fetchData, isClient]);
 
   const handlePackageQuery = useCallback(() => {
+    if (!isClient) return;
+    
     if (!packageId) {
       setError('Please enter packageId');
       return;
     }
     fetchData(`/package?packageId=${packageId}`);
-  }, [packageId, fetchData]);
+  }, [packageId, fetchData, isClient]);
 
   const handleStoringOrderCheck = useCallback(async (e: React.FormEvent) => {
+    if (!isClient) return;
+    
     e.preventDefault();
     if (!soId || !awb || !boe) {
       setError('Fill all fields');
@@ -107,7 +121,11 @@ export default function HomePage() {
       airwayBillNumber: awb,
       billOfEntryId: boe
     });
-  }, [soId, awb, boe, fetchData]);
+  }, [soId, awb, boe, fetchData, isClient]);
+
+  if (!isClient) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>

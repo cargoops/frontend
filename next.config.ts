@@ -10,7 +10,9 @@ const nextConfig = {
   // 클라이언트 사이드 JavaScript 최적화
   experimental: {
     optimizePackageImports: ['react', 'react-dom']
-  }
+  },
+  // 정적 파일 경로 설정
+  trailingSlash: true
 }
 
 export default nextConfig
